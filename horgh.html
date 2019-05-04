@@ -5,8 +5,9 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Horgh replicator is a tool to merge data from any databases in one storage.">
+    <meta name="keywords" content="horgh, replicator, binlog, MySQL, Vertica, PostgreSQL, Clickhouse, Tungsten" />
+    <meta name="author" content="Lars Novikov">
 
     <title>Horgh replicator</title>
 
@@ -29,8 +30,9 @@
         </div>
     </div>
     <div class="bg-light border-right" id="sidebar-wrapper" style="position: fixed">
-        <div class="sidebar-heading">Horgh replicator </div>
+        <div class="sidebar-heading"><b>Horgh replicator</b></div>
         <div class="list-group list-group-flush">
+            <a href="https://github.com/larsnovikov/horgh-replicator" target="_blank" class="list-group-item list-group-item-action bg-light"><b>Repository</b></a>
             <a href="#about" class="list-group-item list-group-item-action bg-light">About</a>
             <a href="#database_support" class="list-group-item list-group-item-action bg-light">Database support</a>
             <a href="#quick_start" class="list-group-item list-group-item-action bg-light">Quick start</a>
@@ -46,38 +48,151 @@
 
         <div id="about" class="container-fluid">
             <h1 class="mt-4">About</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <p>
+                <b>Horgh replicator</b> is a tool to merge data from any databases in one storage.
+            </p>
+            <h5>How it works?</h5>
+            <ul>
+            <li>Listening MySQL master binary log</li>
+            <li>Binlog events parsing</li>
+            <li>Repeat master events in slave</li>
+            </ul>
         </div>
 
         <div id="database_support" class="container-fluid">
             <h1 class="mt-4">Database support</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <div>
+                <div style="margin-top: 20px">
+                    <h3>Master types</h3>
+                    <div class="row">
+                        <div class="col-sm-4">MySQL</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px">
+                    <h3>Slave types</h3>
+                    <div class="row">
+                        <div class="col-sm-3">MySQL</div>
+                        <div class="col-sm-3">PostgreSQL</div>
+                        <div class="col-sm-3">HP Vertica</div>
+                        <div class="col-sm-3">Yandex Clickhouse</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="quick_start" class="container-fluid">
             <h1 class="mt-4">Quick start</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <p>
+            <ul>
+                <li>
+                    Enable MySQL master binary logs in row format. Add to MySQL master configuration:</br>
+                    <code>
+                        server-id = 1</br>
+                        log-slave-updates</br>
+                        binlog-format = row</br>
+                        log-bin = /var/log/mysql/mysql-bin.log</br>
+                        binlog_do_db=&lt;replicated_db&gt;</br>
+                    </code>
+                </li>
+                <li>
+                    Restart MySQL master to apply changes: <code>service mysql restart</code>
+                </li>
+                <li>
+                    Clone Horgh replicator from repo: <code>git clone https://github.com/larsnovikov/horgh-replicator</code>
+                </li>
+                <li>
+                    Copy <code>src/.env.dist</code> to <code>src/.env</code>.<br>
+                    Set MySQL master credentials to <code>src/.env</code>
+                </li>
+                <li>
+                    Create slave database and tables which will be replicated
+                </li>
+                <li>
+                    Set slave credentials to <code>src/.env</code>
+                </li>
+                <li>
+                    Start container in dev mode <code>make start-dev</code>
+                </li>
+                <li>
+                    In docker container create table configs as <code>go run main.go create-model &lt;table_name&gt;</code>
+                </li>
+                <li>
+                    Add <code>&lt;table_name&gt;</code> to <code>ALLOWED_TABLES</code> in <code>src/.env</code>
+                </li>
+                <li>
+                    In docker container init current MySQL master state: <code>go run main.go build-slave &gt;table_name&gt;</code>
+                </li>
+                <li>
+                    In docker container start replication: <code>go run main.go listen</code>
+                </li>
+                <li>
+                    Start replication in prod mode:<br>
+                    - Build docker image: <code>make build-prod</code><br>
+                    - Start docker container: <code>make start-prod</code>
+                </li>
+            </ul>
+            </p>
         </div>
 
         <div id="custom_handlers" class="container-fluid">
             <h1 class="mt-4">Custom handlers</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <p>
+                If you need to handle some values of fields before save, you can use special handlers.
+            </p>
+            <h5>System handlers</h5>
+            <ul>
+                <li>
+                    <code>system/set_value</code> - Set field value as first value from <code>param</code> section
+                </li>
+            </ul>
+            <h5>How create handlers?</h5>
+            <ul>
+                <li>
+                    Create <code>plugins/user/&lt;plugin_name&gt;/handler.go</code> like <code>create plugins/system/set_value/handler.go</code>
+                </li>
+                <li>
+                    Execute <code>go build -buildmode=plugin -o plugins/user/&lt;plugin_name&gt;/handler.so plugins/user/&lt;plugin_name&gt;/handler.go</code>
+                </li>
+                <li>
+                    Add to field description in <code>src/system/configs/&lt;model&gt;.json</code><br>
+                    <code>
+                        "beforeSave": {<br>
+                        &nbsp;&nbsp;"handler": "user/&lt;plugin_name&gt;",<br>
+                        &nbsp;&nbsp;"params": [<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;"***"<br>
+                        &nbsp;&nbsp;]<br>
+                        }<br>
+                    </code>
+                </li>
+            </ul>
         </div>
 
         <div id="tools" class="container-fluid">
             <h1 class="mt-4">Tools</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <ul>
+                <li>
+                    <code>set-position &lt;table_name&gt; &lt;binlog_name&gt; &lt;binlog_position&gt;</code> set start position of log for table listener
+                </li>
+                <li>
+                    <code>load start loader</code> for replication testing (for default tables user and post)
+                </li>
+                <li>
+                    <code>create-model &lt;table_name&gt;</code> create model json-file by master table structure
+                </li>
+                <li>
+                    <code>build-slave &lt;table_name&gt;</code> create master table dump, restore this dump in slave, set start position of log for table listener
+                </li>
+                <li>
+                    <code>destroy-slave &lt;table_name&gt;</code> truncate table, set empty position of log for table listener
+                </li>
+            </ul>
         </div>
 
         <div id="contacts" class="container-fluid">
             <h1 class="mt-4">Contacts</h1>
-            <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-            <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+            <p>
+                Lars Novikov<br> Email: larsnovikov@yandex.ru<br> Telegram: larsnovikov
+            </p>
         </div>
     </div>
     <!-- /#page-content-wrapper -->

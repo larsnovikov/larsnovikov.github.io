@@ -120,7 +120,7 @@
                     Add <code>&lt;table_name&gt;</code> to <code>ALLOWED_TABLES</code> in <code>src/.env</code>
                 </li>
                 <li>
-                    In docker container init current MySQL master state: <code>go run main.go build-slave &gt;table_name&gt;</code>
+                    In docker container init current MySQL master state: <code>go run main.go build-slave &lt;table_name&gt;</code>
                 </li>
                 <li>
                     In docker container start replication: <code>go run main.go listen</code>

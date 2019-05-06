@@ -117,7 +117,7 @@
                     In docker container create table configs as <code>go run main.go create-model &lt;table_name&gt;</code>
                 </li>
                 <li>
-                    Add <code>&lt;table_name&gt;</code> to <code>ALLOWED_TABLES</code> in <code>src/.env</code>
+                    Set <code>&lt;table_name&gt;</code> to <code>TABLE</code> in <code>src/.env</code> (One instance - one table)
                 </li>
                 <li>
                     In docker container init current MySQL master state: <code>go run main.go build-slave &lt;table_name&gt;</code>

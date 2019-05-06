@@ -120,7 +120,7 @@
                     Set <code>&lt;table_name&gt;</code> to <code>TABLE</code> in <code>src/.env</code> (One instance - one table)
                 </li>
                 <li>
-                    In docker container init current MySQL master state: <code>go run main.go build-slave &lt;table_name&gt;</code>
+                    In docker container init current MySQL master state: <code>go run main.go build-slave</code>
                 </li>
                 <li>
                     In docker container start replication: <code>go run main.go listen</code>
@@ -180,10 +180,10 @@
                     <code>create-model &lt;table_name&gt;</code> create model json-file by master table structure
                 </li>
                 <li>
-                    <code>build-slave &lt;table_name&gt;</code> create master table dump, restore this dump in slave, set start position of log for table listener
+                    <code>build-slave</code> create master table dump, restore this dump in slave, set start position of log for table listener
                 </li>
                 <li>
-                    <code>destroy-slave &lt;table_name&gt;</code> truncate table, set empty position of log for table listener
+                    <code>destroy-slave</code> truncate table, set empty position of log for table listener
                 </li>
             </ul>
         </div>

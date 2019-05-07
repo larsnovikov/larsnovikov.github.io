@@ -108,7 +108,8 @@
                     Create slave database and tables which will be replicated
                 </li>
                 <li>
-                    Set slave credentials to <code>src/.env</code>
+                    Set slave credentials to <code>src/.env</code><br>
+                    Don't forget to set <code>SLAVE_TYPE</code>. Available values: <code>mysql</code>, <code>clickhouse</code>, <code>vertica</code>, <code>postgresql</code>
                 </li>
                 <li>
                     Start container in dev mode <code>make start-dev</code>
